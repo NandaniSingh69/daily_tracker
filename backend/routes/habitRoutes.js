@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Habit = require('../models/Habit');
+const { protect } = require('../middleware/authMiddleware');
 
-// Get all habits
+// Protect all routes
+router.use(protect);
+
+// Get all habits for logged-in user
 router.get('/', async (req, res) => {
   try {
-    const habits = await Habit.find().sort({ createdAt: -1 });
+    const habits = await Habit.find({ user: req.userId }).sort({ createdAt: -1 });
     res.json(habits);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -16,6 +20,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const habit = new Habit({
+      user: req.userId,
       name: req.body.name,
       targetDays: req.body.targetDays || ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     });
@@ -26,12 +31,16 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Toggle habit completion for a specific date
+// Toggle habit completion
 router.put('/:id/toggle', async (req, res) => {
   try {
-    const habit = await Habit.findById(req.params.id);
-    const { date } = req.body;
+    const habit = await Habit.findOne({ _id: req.params.id, user: req.userId });
     
+    if (!habit) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+    
+    const { date } = req.body;
     const dateIndex = habit.completedDates.findIndex(
       d => d.toDateString() === new Date(date).toDateString()
     );
@@ -52,7 +61,12 @@ router.put('/:id/toggle', async (req, res) => {
 // Delete habit
 router.delete('/:id', async (req, res) => {
   try {
-    await Habit.findByIdAndDelete(req.params.id);
+    const habit = await Habit.findOneAndDelete({ _id: req.params.id, user: req.userId });
+    
+    if (!habit) {
+      return res.status(404).json({ message: 'Habit not found' });
+    }
+    
     res.json({ message: 'Habit deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });

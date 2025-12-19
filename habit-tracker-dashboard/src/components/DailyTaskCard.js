@@ -2,7 +2,7 @@ import React from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { getDayName, formatDate } from '../utils/dateHelpers';
 
-const DailyTaskCard = ({ date, tasks, onToggleTask }) => {
+const DailyTaskCard = ({ date, tasks, onToggleTask, onDeleteTask, onAddTask }) => {
   const completedCount = tasks.filter(t => t.completed).length;
   const totalCount = tasks.length;
   const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -47,26 +47,39 @@ const DailyTaskCard = ({ date, tasks, onToggleTask }) => {
 
       {/* Task List */}
       <div className="flex-1">
-        <h4 className="font-semibold mb-2 text-gray-700">Tasks</h4>
+        <div className="flex justify-between items-center mb-2">
+          <h4 className="font-semibold text-gray-700">Tasks</h4>
+          <button
+            onClick={() => onAddTask(date)}
+            className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded transition"
+            title="Add task"
+          >
+            + Add
+          </button>
+        </div>
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {tasks.length === 0 ? (
             <p className="text-gray-400 text-sm italic">No tasks for this day</p>
           ) : (
             tasks.map((task) => (
-              <label
-                key={task._id}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-              >
+              <div key={task._id} className="flex items-center gap-2 hover:bg-gray-50 p-2 rounded">
                 <input
                   type="checkbox"
                   checked={task.completed}
                   onChange={() => onToggleTask(task._id, !task.completed)}
                   className="w-4 h-4 text-green-600"
                 />
-                <span className={task.completed ? 'line-through text-gray-400' : 'text-gray-700'}>
+                <span className={`flex-1 ${task.completed ? 'line-through text-gray-400' : 'text-gray-700'}`}>
                   {task.taskName}
                 </span>
-              </label>
+                <button
+                  onClick={() => onDeleteTask(task._id)}
+                  className="text-red-500 hover:text-red-700 text-sm"
+                  title="Delete task"
+                >
+                  ×
+                </button>
+              </div>
             ))
           )}
         </div>

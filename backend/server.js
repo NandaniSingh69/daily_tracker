@@ -19,7 +19,8 @@ app.get('/', (req, res) => {
   res.json({ message: 'Habit Tracker API is running!' });
 });
 
-// Routes (we'll add these next)
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/habits', require('./routes/habitRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 
@@ -28,4 +29,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-

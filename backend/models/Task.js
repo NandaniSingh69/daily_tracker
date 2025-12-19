@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
   date: {
     type: Date,
     required: true
@@ -19,7 +24,7 @@ const taskSchema = new mongoose.Schema({
     default: 'general'
   },
   dayOfWeek: {
-    type: String // 'Sunday', 'Monday', etc.
+    type: String
   }
 });
 

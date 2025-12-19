@@ -1,7 +1,7 @@
 import React from 'react';
 import { getWeekDates, getShortDayName, isSameDay } from '../utils/dateHelpers';
 
-const HabitTracker = ({ habits, currentWeek, onToggleHabit }) => {
+const HabitTracker = ({ habits, currentWeek, onToggleHabit, onDeleteHabit }) => {
   const weekDates = getWeekDates(currentWeek);
 
   const isHabitCompleted = (habit, date) => {
@@ -34,37 +34,55 @@ const HabitTracker = ({ habits, currentWeek, onToggleHabit }) => {
                 </th>
               ))}
               <th className="text-center py-3 px-4 font-semibold">Progress</th>
+              <th className="text-center py-3 px-4 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {habits.map((habit) => (
-              <tr key={habit._id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-4 font-medium">{habit.name}</td>
-                {weekDates.map((date, index) => (
-                  <td key={index} className="text-center py-3 px-2">
-                    <input
-                      type="checkbox"
-                      checked={isHabitCompleted(habit, date)}
-                      onChange={() => onToggleHabit(habit._id, date)}
-                      className="w-5 h-5 text-green-600 cursor-pointer"
-                    />
-                  </td>
-                ))}
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-green-500 h-2 rounded-full transition-all"
-                        style={{ width: `${calculateProgress(habit)}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-semibold text-green-600">
-                      {calculateProgress(habit)}%
-                    </span>
-                  </div>
+            {habits.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="text-center py-8 text-gray-400">
+                  No habits yet. Add your first habit!
                 </td>
               </tr>
-            ))}
+            ) : (
+              habits.map((habit) => (
+                <tr key={habit._id} className="border-b hover:bg-gray-50">
+                  <td className="py-3 px-4 font-medium">{habit.name}</td>
+                  {weekDates.map((date, index) => (
+                    <td key={index} className="text-center py-3 px-2">
+                      <input
+                        type="checkbox"
+                        checked={isHabitCompleted(habit, date)}
+                        onChange={() => onToggleHabit(habit._id, date)}
+                        className="w-5 h-5 text-green-600 cursor-pointer"
+                      />
+                    </td>
+                  ))}
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-green-500 h-2 rounded-full transition-all"
+                          style={{ width: `${calculateProgress(habit)}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-semibold text-green-600">
+                        {calculateProgress(habit)}%
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <button
+                      onClick={() => onDeleteHabit(habit._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition"
+                      title="Delete habit"
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
