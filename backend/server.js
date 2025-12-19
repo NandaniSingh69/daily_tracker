@@ -7,18 +7,12 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// CORS configuration
-const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'https://habit-tracker-dashboard.vercel.app', // Replace with your actual Vercel URL
-    'https://habit-tracker-dashboard-*.vercel.app' // For preview deployments
-  ],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
+// CORS - Allow all origins for now
+app.use(cors({
+  origin: '*',  // Allow all origins temporarily
+  credentials: true
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json());
 
 // Connect to MongoDB
