@@ -7,19 +7,28 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'https://habit-tracker-dashboard.vercel.app', // Replace with your actual Vercel URL
+    'https://habit-tracker-dashboard-*.vercel.app' // For preview deployments
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Connect to MongoDB
 connectDB();
 
-// Basic test route
+// Routes
 app.get('/', (req, res) => {
   res.json({ message: 'Habit Tracker API is running!' });
 });
 
-// Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/habits', require('./routes/habitRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
